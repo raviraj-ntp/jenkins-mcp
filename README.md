@@ -3,7 +3,7 @@
 Local MCP server for **Jenkins** — ~37 tools for jobs, builds, logs, artifacts, and pipelines. Uses the Jenkins REST API; **no Jenkins plugin** required.
 
 - Runs on **your machine**
-- **npm:** `@raviraj/jenkins-mcp` — https://www.npmjs.com/package/@raviraj/jenkins-mcp
+- **npm:** `@raviraj87/jenkins-mcp` — https://www.npmjs.com/package/@raviraj87/jenkins-mcp
 - **GitHub:** https://github.com/ravi-netapp/jenkins-mcp
 
 ---
@@ -17,7 +17,7 @@ Edit `~/.cursor/mcp.json`:
   "mcpServers": {
     "jenkins": {
       "command": "npx",
-      "args": ["-y", "@raviraj/jenkins-mcp"],
+      "args": ["-y", "@raviraj87/jenkins-mcp"],
       "env": {
         "JENKINS_URL": "https://jenkins.example.com",
         "JENKINS_USERNAME": "your-username",
@@ -48,7 +48,7 @@ Use `"command": "node"`, `"args": ["<<YOUR_CLONE_PATH>>/jenkins-mcp/dist/index.j
 
 | What | Where | Notes |
 |------|--------|-------|
-| Server | `mcp.json` | **npm:** `npx` + `@raviraj/jenkins-mcp` — **or** `node` + clone path |
+| Server | `mcp.json` | **npm:** `npx` + `@raviraj87/jenkins-mcp` — **or** `node` + clone path |
 | `JENKINS_URL` | `env` | Your Jenkins URL (no trailing `/`) |
 | `JENKINS_USERNAME` / `JENKINS_API_TOKEN` | `env` | API token, not password |
 
@@ -70,7 +70,7 @@ Use `"command": "node"`, `"args": ["<<YOUR_CLONE_PATH>>/jenkins-mcp/dist/index.j
   "mcpServers": {
     "jenkins": {
       "command": "npx",
-      "args": ["-y", "@raviraj/jenkins-mcp"],
+      "args": ["-y", "@raviraj87/jenkins-mcp"],
       "env": {
         "JENKINS_URL": "https://jenkins.example.com",
         "JENKINS_USERNAME": "your-username",
