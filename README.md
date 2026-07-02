@@ -3,11 +3,35 @@
 Local MCP server for **Jenkins** — ~37 tools for jobs, builds, logs, artifacts, and pipelines. Uses the Jenkins REST API; **no Jenkins plugin** required.
 
 - Runs on **your machine**
-- **MIT license** — https://github.com/ravi-netapp/jenkins-mcp
+- **npm:** `@raviraj/jenkins-mcp` — https://www.npmjs.com/package/@raviraj/jenkins-mcp
+- **GitHub:** https://github.com/ravi-netapp/jenkins-mcp
 
 ---
 
-## Quick start
+## Quick start (npm — recommended)
+
+Edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "jenkins": {
+      "command": "npx",
+      "args": ["-y", "@raviraj/jenkins-mcp"],
+      "env": {
+        "JENKINS_URL": "https://jenkins.example.com",
+        "JENKINS_USERNAME": "your-username",
+        "JENKINS_API_TOKEN": "your-api-token",
+        "JENKINS_ALLOW_SCRIPT_CONSOLE": "false"
+      }
+    }
+  }
+}
+```
+
+Restart Cursor. Ask: *"Use jenkins_health"*.
+
+## Install from source (optional)
 
 ```bash
 git clone https://github.com/ravi-netapp/jenkins-mcp.git
@@ -16,7 +40,7 @@ npm install
 npm run build
 ```
 
-Add to `~/.cursor/mcp.json` (below), restart Cursor, ask: *"Use jenkins_health"*.
+Use `"command": "node"`, `"args": ["<<YOUR_CLONE_PATH>>/jenkins-mcp/dist/index.js"]` in `mcp.json`.
 
 ---
 
@@ -24,10 +48,9 @@ Add to `~/.cursor/mcp.json` (below), restart Cursor, ask: *"Use jenkins_health"*
 
 | What | Where | Notes |
 |------|--------|-------|
-| Clone path | `mcp.json` → `args` | Where **you** cloned this repo |
-| `JENKINS_URL` | `mcp.json` → `env` | Your Jenkins base URL (no trailing `/`) |
-| `JENKINS_USERNAME` | `env` | Your Jenkins user |
-| `JENKINS_API_TOKEN` | `env` | API token — **not** your login password |
+| Server | `mcp.json` | **npm:** `npx` + `@raviraj/jenkins-mcp` — **or** `node` + clone path |
+| `JENKINS_URL` | `env` | Your Jenkins URL (no trailing `/`) |
+| `JENKINS_USERNAME` / `JENKINS_API_TOKEN` | `env` | API token, not password |
 
 ---
 
@@ -40,14 +63,14 @@ Add to `~/.cursor/mcp.json` (below), restart Cursor, ask: *"Use jenkins_health"*
 
 ## Cursor setup
 
-Edit `~/.cursor/mcp.json`:
+**npm (recommended):**
 
 ```json
 {
   "mcpServers": {
     "jenkins": {
-      "command": "node",
-      "args": ["<<YOUR_CLONE_PATH>>/jenkins-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "@raviraj/jenkins-mcp"],
       "env": {
         "JENKINS_URL": "https://jenkins.example.com",
         "JENKINS_USERNAME": "your-username",
@@ -59,11 +82,14 @@ Edit `~/.cursor/mcp.json`:
 }
 ```
 
-Replace `<<YOUR_CLONE_PATH>>` with where you cloned the repo.
+**From source:**
+
+```json
+"command": "node",
+"args": ["<<YOUR_CLONE_PATH>>/jenkins-mcp/dist/index.js"]
+```
 
 Restart Cursor. Check **Settings → MCP** for ~37 tools.
-
-**Dev mode:** `"command": "npx"`, `"args": ["tsx", "<<YOUR_CLONE_PATH>>/jenkins-mcp/src/index.ts"]`
 
 ### Environment variables
 
@@ -157,4 +183,5 @@ In Cursor:
 
 ## Publishing
 
-See [PUBLISHING.md](./PUBLISHING.md).
+- GitHub: [PUBLISHING.md](./PUBLISHING.md)
+- npm: [NPM_PUBLISH.md](./NPM_PUBLISH.md)
