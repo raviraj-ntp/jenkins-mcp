@@ -87,7 +87,7 @@ Runs entirely on your machine. Credentials stay in your `mcp.json` or environmen
 ### 1. Clone and build
 
 ```bash
-git clone https://github.com/YOUR_USER/jenkins-mcp.git
+git clone https://github.com/ravi-netapp/jenkins-mcp.git
 cd jenkins-mcp
 npm install
 npm run build

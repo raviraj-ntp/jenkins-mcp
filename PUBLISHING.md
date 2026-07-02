@@ -32,7 +32,7 @@ git init
 git add .
 git commit -m "Initial commit: Jenkins MCP server"
 git branch -M main
-git remote add origin git@github.com:YOUR_USER/jenkins-mcp.git
+git remote add origin git@github.com:ravi-netapp/jenkins-mcp.git
 git push -u origin main
 ```
 
