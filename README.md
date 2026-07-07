@@ -181,26 +181,6 @@ In Cursor:
 
 ---
 
----
-
 ## License
 
 Copyright © 2026 Ravi Raj. Licensed under the [MIT License](LICENSE).
-
-## Publishing (maintainers)
-
-Repo: https://github.com/raviraj-ntp/jenkins-mcp · npm: `@raviraj87/jenkins-mcp`
-
-```bash
-git status
-npm run build
-git push origin main
-
-npm whoami    # raviraj87
-npm version patch    # required before republish
-npm publish --access public
-# 2FA: npm publish --access public --otp=XXXXXX
-```
-
-New GitHub repo: `gh repo create raviraj-ntp/jenkins-mcp --public --source=. --remote=origin --push`  
-Remote (HTTPS): `https://github.com/raviraj-ntp/jenkins-mcp.git`
