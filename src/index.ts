@@ -34,6 +34,46 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
+function envFlag(name: string): boolean {
+  const v = process.env[name]?.trim().toLowerCase();
+  return v === "1" || v === "true" || v === "yes" || v === "on";
+}
+
+// Native fetch has no per-request TLS agent. This flag is process-wide and
+// only affects this MCP, which talks to the configured Jenkins controller.
+if (envFlag("JENKINS_NO_SSL_VERIFY")) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+  console.error(
+    "jenkins-mcp: JENKINS_NO_SSL_VERIFY is set; TLS certificate verification is disabled.",
+  );
+}
+
+const TLS_FAILURE_CODES = new Set([
+  "CERT_HAS_EXPIRED",
+  "DEPTH_ZERO_SELF_SIGNED_CERT",
+  "SELF_SIGNED_CERT_IN_CHAIN",
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+  "UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+  "ERR_TLS_CERT_ALTNAME_INVALID",
+]);
+
+function formatFetchError(err: unknown, baseUrl: string): string {
+  const message = err instanceof Error ? err.message : String(err);
+  const cause =
+    err instanceof Error ? (err as { cause?: unknown }).cause : undefined;
+  const code =
+    cause && typeof cause === "object" && cause !== null && "code" in cause
+      ? String((cause as { code?: unknown }).code ?? "")
+      : "";
+  const causeMessage = cause instanceof Error ? cause.message : "";
+  const detail = [code, causeMessage].filter(Boolean).join(": ");
+  const hint = TLS_FAILURE_CODES.has(code)
+    ? " Certificate verification failed. Trust the controller CA with NODE_EXTRA_CA_CERTS, or set JENKINS_NO_SSL_VERIFY=true to skip TLS verification."
+    : "";
+  const why = detail ? `${message} (${detail})` : message;
+  return `Jenkins request to ${baseUrl} failed: ${why}.${hint}`;
+}
+
 type Crumb = {
   crumbRequestField: string;
   crumb: string;
@@ -74,9 +114,17 @@ class JenkinsClient {
     return h;
   }
 
+  private async jenkinsFetch(url: string, init?: RequestInit): Promise<Response> {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      throw new Error(formatFetchError(err, this.baseUrl));
+    }
+  }
+
   private async ensureCrumb(): Promise<void> {
     if (this.crumb) return;
-    const res = await fetch(`${this.baseUrl}/crumbIssuer/api/json`, {
+    const res = await this.jenkinsFetch(`${this.baseUrl}/crumbIssuer/api/json`, {
       headers: this.headers(),
     });
     if (!res.ok) {
@@ -103,7 +151,7 @@ class JenkinsClient {
       };
     }
 
-    let res = await fetch(`${this.baseUrl}${path}`, init);
+    let res = await this.jenkinsFetch(`${this.baseUrl}${path}`, init);
     if ((res.status === 403 || res.status === 401) && mutate) {
       this.crumb = null;
       await this.ensureCrumb();
@@ -111,7 +159,7 @@ class JenkinsClient {
         ...this.headers(undefined, true),
         ...(init.headers ?? {}),
       };
-      res = await fetch(`${this.baseUrl}${path}`, init);
+      res = await this.jenkinsFetch(`${this.baseUrl}${path}`, init);
     }
     return res;
   }
@@ -628,7 +676,7 @@ async function main(): Promise<void> {
   const jenkins = new JenkinsClient();
   const server = new McpServer({
     name: "jenkins-mcp-server",
-      version: "1.0.1",
+      version: "1.0.2",
   });
 
   function registerTool(

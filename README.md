@@ -99,6 +99,8 @@ Restart Cursor. Check **Settings → MCP** for ~37 tools.
 | `JENKINS_USERNAME` | Recommended | — | For HTTP Basic auth |
 | `JENKINS_API_TOKEN` | Recommended | — | API token |
 | `JENKINS_ALLOW_SCRIPT_CONSOLE` | No | `false` | Set `true` only to enable `run_script_console` |
+| `NODE_EXTRA_CA_CERTS` | No | — | PEM of an internal CA. Node reads this at process start |
+| `JENKINS_NO_SSL_VERIFY` | No | `false` | Skip TLS verification for this process. Use for a self-signed or expired controller cert |
 
 ---
 
@@ -166,6 +168,7 @@ In Cursor:
 
 - Never commit `JENKINS_API_TOKEN`.
 - Keep `JENKINS_ALLOW_SCRIPT_CONSOLE=false` unless you explicitly need script console.
+- Prefer `NODE_EXTRA_CA_CERTS` over `JENKINS_NO_SSL_VERIFY`. The skip flag disables certificate checks for every HTTPS call in this process.
 - Server can create/delete jobs and trigger builds — use a limited-permission Jenkins user.
 
 ---
@@ -175,6 +178,7 @@ In Cursor:
 | Problem | Fix |
 |---------|-----|
 | `JENKINS_URL is required` | Add to `mcp.json` `env` |
+| `fetch failed` / `CERT_HAS_EXPIRED` / untrusted certificate | Node hides the TLS cause behind `fetch failed`. Trust the CA with `NODE_EXTRA_CA_CERTS`, or set `JENKINS_NO_SSL_VERIFY=true` for a self-signed or expired controller cert |
 | 401 Unauthorized | Use API token, not password |
 | 403 Forbidden | Grant Jenkins permissions to API user |
 | Tools missing | Fix `args` path; `npm run build`; restart Cursor |
